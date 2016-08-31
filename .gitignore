@@ -1,0 +1,10 @@
+.DS_Store
+
+xcuserdata
+*.xcworkspace
+
+AHPullToRefreshDemoTests
+AHPullToRefreshDemoUITests
+
+Pods
+Podfile.lock
