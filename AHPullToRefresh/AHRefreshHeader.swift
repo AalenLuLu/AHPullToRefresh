@@ -9,7 +9,7 @@
 import UIKit
 
 public enum AHRefreshState {
-	case Stoped, Trigger, Loading
+	case Stoped, Triggered, Loading, Success, Failed
 }
 
 public class AHRefreshHeader: UIView {
@@ -70,13 +70,13 @@ public class AHRefreshHeader: UIView {
 				
 				let threshold = self.frame.origin.y - originalInsetTop
 				
-				if !scrollView.dragging && .Trigger == state {
+				if !scrollView.dragging && .Triggered == state {
 					setRefresh(.Loading)
 				} else if contentOffset.y >= threshold && scrollView.dragging && .Stoped != state {
 					setRefresh(.Stoped)
 				} else if contentOffset.y < threshold && scrollView.dragging && .Stoped == state {
 					originalInsetTop = scrollView.contentInset.top
-					setRefresh(.Trigger)
+					setRefresh(.Triggered)
 				} /*else if contentOffset.y >= scrollOffsetThreshold && .Stoped != state {
 					state = .Stoped
 				}*/
@@ -107,13 +107,17 @@ public class AHRefreshHeader: UIView {
 		case .Loading:
 			layoutHeaderForLoading()
 			setScrollViewContentInsetsForLoading()
-			if previousState == .Trigger {
+			if previousState == .Triggered {
 				if let action = triggerRefreshAction {
 					action()
 				}
 			}
-		case .Trigger:
-			layoutHeaderForTrigger()
+		case .Triggered:
+			layoutHeaderForTriggered()
+		case .Success:
+			layoutHeaderForSuccess()
+		case .Failed:
+			layoutHeaderForFailed()
 		}
 	}
 	
@@ -160,7 +164,15 @@ public class AHRefreshHeader: UIView {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForTrigger() {
+	public func layoutHeaderForTriggered() {
+		fatalError("subclass must override")
+	}
+	
+	public func layoutHeaderForSuccess() {
+		fatalError("subclass must override")
+	}
+	
+	public func layoutHeaderForFailed() {
 		fatalError("subclass must override")
 	}
 }

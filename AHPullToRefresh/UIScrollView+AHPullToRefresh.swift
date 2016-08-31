@@ -8,7 +8,7 @@
 
 import UIKit
 
-var headerAssociatedKey = "com.aalen.pulltorefresh.header"
+var AHRefreshHeaderKey = "com.aalen.pulltorefresh.header"
 
 public extension UIScrollView {
 	
@@ -46,11 +46,11 @@ public extension UIScrollView {
 	public var headerView: AHRefreshHeader? {
 		
 		get {
-			return objc_getAssociatedObject(self, &headerAssociatedKey) as? AHRefreshHeader
+			return objc_getAssociatedObject(self, &AHRefreshHeaderKey) as? AHRefreshHeader
 		}
 		
 		set(newHeader) {
-			objc_setAssociatedObject(self, &headerAssociatedKey, newHeader, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+			objc_setAssociatedObject(self, &AHRefreshHeaderKey, newHeader, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		}
 	}
 }
