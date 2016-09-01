@@ -32,7 +32,7 @@ public extension UIScrollView {
 			
 			//restore...
 			var inset = self.contentInset
-			inset.top = header.originalInsetTop
+			inset.top = header.getOriginalInsetTop()
 			self.contentInset = inset
 			
 			//remove...

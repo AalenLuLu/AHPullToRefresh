@@ -9,7 +9,11 @@
 import UIKit
 
 public enum AHRefreshState {
-	case Stoped, Triggered, Loading, Success, Failed
+	case Stoped, Triggered, Loading, Success, Failed, NoMore
+}
+
+public enum AHRefreshResult {
+	case Success, Failed, NoMore
 }
 
 public class AHRefreshHeader: UIView {
@@ -24,7 +28,7 @@ public class AHRefreshHeader: UIView {
 	
 	// MARK: - property
 	
-	public var originalInsetTop: CGFloat = 0
+	private var originalInsetTop: CGFloat = 0
 	
 	public var state = AHRefreshState.Stoped
 	
@@ -34,8 +38,29 @@ public class AHRefreshHeader: UIView {
 	
 	// MARK: - interface
 	
-	public func stopAnimating() {
-		setRefresh(.Stoped)
+	public func getOriginalInsetTop() -> CGFloat {
+		return originalInsetTop
+	}
+	
+	public func stopAnimating(result: AHRefreshResult, showResult: Bool) {
+		if showResult {
+			
+			switch result {
+				case .Success:
+					setRefresh(.Success)
+				case .Failed:
+					setRefresh(.Failed)
+				case .NoMore:
+					setRefresh(.NoMore)
+			}
+			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(timeIntervalForShowSuccessFailed() * NSTimeInterval(NSEC_PER_SEC))), dispatch_get_main_queue(), { 
+				self.setRefresh(.Stoped)
+			})
+			
+		} else {
+			setRefresh(.Stoped)
+		}
 	}
 	
 	// MARK: - view handle
@@ -64,7 +89,7 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	func scrollViewDidScroll(contentOffset: CGPoint) {
+	private func scrollViewDidScroll(contentOffset: CGPoint) {
 		if let scrollView = scrollView {
 			if .Loading != state {
 				
@@ -91,7 +116,7 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	func setRefresh(state: AHRefreshState) {
+	private func setRefresh(state: AHRefreshState) {
 		
 		if self.state == state {
 			return
@@ -118,10 +143,12 @@ public class AHRefreshHeader: UIView {
 			layoutHeaderForSuccess()
 		case .Failed:
 			layoutHeaderForFailed()
+		case .NoMore:
+			layoutHeaderForNoMore()
 		}
 	}
 	
-	public func resetScrollViewContentInsets() {
+	private func resetScrollViewContentInsets() {
 		if let scrollView = scrollView {
 			var insets = scrollView.contentInset
 			insets.top = originalInsetTop
@@ -129,7 +156,7 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	public func setScrollViewContentInsetsForLoading() {
+	private func setScrollViewContentInsetsForLoading() {
 		if let scrollView = scrollView {
 			let offset = originalInsetTop + self.bounds.size.height
 			var insets = scrollView.contentInset
@@ -138,20 +165,52 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	public func setScrollViewContentInsets(insets: UIEdgeInsets) {
-		UIView.animateWithDuration(0.25, delay: 0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: {
+	private func setScrollViewContentInsets(insets: UIEdgeInsets) {
+		UIView.animateWithDuration(timeIntervalForScrollAnimate(), delay: 0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: {
 				if let scrollView = self.scrollView {
 					scrollView.contentInset = insets
 				}
 			}, completion: nil)
 	}
 
-	public func registerObserve(view: UIView) {
+	private func registerObserve(view: UIView) {
 		view.addObserver(self, forKeyPath: "contentOffset", options: .New, context: nil)
 	}
 	
-	public func unregisterObserve(view: UIView) {
+	private func unregisterObserve(view: UIView) {
 		view.removeObserver(self, forKeyPath: "contentOffset")
+	}
+	
+	// MARK: - load resource
+	
+	public func localizedString(key: String) -> String? {
+		
+		var language = NSLocale.preferredLanguages()[0]
+		if language.hasPrefix("en") {
+			language = "en"
+		} else if language.hasPrefix("zh") {
+			language = "zh"
+		} else {
+			language = "en"
+		}
+		
+		if let bundle = NSBundle(path: NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("AHRefresh", ofType: "bundle")!)!.pathForResource(language, ofType: "lproj")!) {
+			let string = bundle.localizedStringForKey(key, value: nil, table: nil)
+			return string
+		}
+		return nil
+	}
+	
+	public func arrowImage() -> UIImage? {
+		let scale = UIScreen.mainScreen().scale
+		var name = "arrow"
+		if 1 < scale && scale < 3 {
+			name += "@2x"
+		} else if 2 < scale {
+			name += "@3x"
+		}
+		let path = NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("AHRefresh", ofType: "bundle")!)?.pathForResource(name, ofType: "png")
+		return UIImage(contentsOfFile: path!)
 	}
 	
 	// MARK: - subclass must override
@@ -174,5 +233,19 @@ public class AHRefreshHeader: UIView {
 	
 	public func layoutHeaderForFailed() {
 		fatalError("subclass must override")
+	}
+	
+	public func layoutHeaderForNoMore() {
+		fatalError("subclass must override")
+	}
+	
+	// MARK: - subclass can override
+	
+	public func timeIntervalForShowSuccessFailed() -> NSTimeInterval {
+		return 3
+	}
+	
+	public func timeIntervalForScrollAnimate() -> NSTimeInterval {
+		return 0.25
 	}
 }

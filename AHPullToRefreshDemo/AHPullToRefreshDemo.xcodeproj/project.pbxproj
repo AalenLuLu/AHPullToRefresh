@@ -16,6 +16,9 @@
 		FEEAB8991D6FDB6000F72319 /* AHPullToRefreshDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEAB8981D6FDB6000F72319 /* AHPullToRefreshDemoUITests.swift */; };
 		FEEAB8AA1D6FDC6500F72319 /* UIScrollView+AHPullToRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEAB8A91D6FDC6500F72319 /* UIScrollView+AHPullToRefresh.swift */; };
 		FEEAB8AC1D6FE1C400F72319 /* AHRefreshHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEAB8AB1D6FE1C400F72319 /* AHRefreshHeader.swift */; };
+		FEEEF4531D77DDCF0010497A /* AHRefreshTextHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEEF4521D77DDCF0010497A /* AHRefreshTextHeader.swift */; };
+		FEEEF4571D780BF40010497A /* AHRefresh.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FEEEF4561D780BF40010497A /* AHRefresh.bundle */; };
+		FEEEF4591D781D3D0010497A /* TextHeaderDemoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEEF4581D781D3D0010497A /* TextHeaderDemoTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +54,9 @@
 		FEEAB89A1D6FDB6000F72319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FEEAB8A91D6FDC6500F72319 /* UIScrollView+AHPullToRefresh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIScrollView+AHPullToRefresh.swift"; sourceTree = "<group>"; };
 		FEEAB8AB1D6FE1C400F72319 /* AHRefreshHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AHRefreshHeader.swift; sourceTree = "<group>"; };
+		FEEEF4521D77DDCF0010497A /* AHRefreshTextHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AHRefreshTextHeader.swift; sourceTree = "<group>"; };
+		FEEEF4561D780BF40010497A /* AHRefresh.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = AHRefresh.bundle; sourceTree = "<group>"; };
+		FEEEF4581D781D3D0010497A /* TextHeaderDemoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextHeaderDemoTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +108,7 @@
 		FEEAB8771D6FDB6000F72319 /* AHPullToRefreshDemo */ = {
 			isa = PBXGroup;
 			children = (
+				FEEEF4511D77D5BC0010497A /* Classes */,
 				FEEAB8781D6FDB6000F72319 /* AppDelegate.swift */,
 				FEEAB87A1D6FDB6000F72319 /* ViewController.swift */,
 				FE2CE20C1D75664A00744E59 /* TableViewController.swift */,
@@ -133,11 +140,21 @@
 		FEEAB8A61D6FDB7600F72319 /* AHPullToRefresh */ = {
 			isa = PBXGroup;
 			children = (
+				FEEEF4561D780BF40010497A /* AHRefresh.bundle */,
 				FEEAB8A91D6FDC6500F72319 /* UIScrollView+AHPullToRefresh.swift */,
 				FEEAB8AB1D6FE1C400F72319 /* AHRefreshHeader.swift */,
+				FEEEF4521D77DDCF0010497A /* AHRefreshTextHeader.swift */,
 			);
 			name = AHPullToRefresh;
 			path = ../AHPullToRefresh;
+			sourceTree = "<group>";
+		};
+		FEEEF4511D77D5BC0010497A /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FEEEF4581D781D3D0010497A /* TextHeaderDemoTableViewController.swift */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,6 +263,7 @@
 			files = (
 				FEEAB8831D6FDB6000F72319 /* LaunchScreen.storyboard in Resources */,
 				FEEAB8801D6FDB6000F72319 /* Assets.xcassets in Resources */,
+				FEEEF4571D780BF40010497A /* AHRefresh.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,9 +288,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEEEF4531D77DDCF0010497A /* AHRefreshTextHeader.swift in Sources */,
 				FEEAB8AC1D6FE1C400F72319 /* AHRefreshHeader.swift in Sources */,
 				FEEAB8AA1D6FDC6500F72319 /* UIScrollView+AHPullToRefresh.swift in Sources */,
 				FEEAB87B1D6FDB6000F72319 /* ViewController.swift in Sources */,
+				FEEEF4591D781D3D0010497A /* TextHeaderDemoTableViewController.swift in Sources */,
 				FE2CE20D1D75664A00744E59 /* TableViewController.swift in Sources */,
 				FEEAB8791D6FDB6000F72319 /* AppDelegate.swift in Sources */,
 			);
