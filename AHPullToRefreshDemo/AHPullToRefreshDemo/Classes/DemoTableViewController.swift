@@ -1,16 +1,17 @@
 //
-//  TextHeaderDemoTableViewController.swift
+//  DemoTableViewController.swift
 //  AHPullToRefreshDemo
 //
-//  Created by Aalen on 16/9/1.
+//  Created by Aalen on 16/9/2.
 //  Copyright © 2016年 Aalen. All rights reserved.
 //
 
 import UIKit
 
-class TextHeaderDemoTableViewController: UITableViewController {
+class DemoTableViewController: UITableViewController {
 
 	var dataList = [String]()
+	var refreshHeaderClass: AHRefreshHeader.Type?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,17 +21,19 @@ class TextHeaderDemoTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+		self.navigationController?.navigationBar.alpha = 0.1
 		self.tableView.rowHeight = 50
-		self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+		self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
 		
-		let refreshHeader = AHRefreshTextHeader(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
-		
-		tableView.addPullToRefresh(refreshHeader) {
-			print("loading...")
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
-				print("finished...")
-				refreshHeader.stopAnimating(.Success, showResult: false)
-			})
+		if let headerClass = refreshHeaderClass {
+			let refreshHeader = headerClass.init(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+			tableView.addPullToRefresh(refreshHeader) {
+				print("loading...")
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+					print("finished...")
+					refreshHeader.stopAnimating(.Success, showResult: false)
+				})
+			}
 		}
 		
 		dataList.append("1")
@@ -72,14 +75,14 @@ class TextHeaderDemoTableViewController: UITableViewController {
         return dataList.count
     }
 
-	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-		
-		// Configure the cell...
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+
+        // Configure the cell...
 		cell.textLabel?.text = dataList[indexPath.row]
-		
-		return cell
-	}
+
+        return cell
+    }
 
     /*
     // Override to support conditional editing of the table view.

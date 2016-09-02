@@ -36,6 +36,17 @@ public class AHRefreshHeader: UIView {
 	
 	public var triggerRefreshAction: (() -> Void)?
 	
+	private var isUserChangeInset = false
+	
+	required override public init(frame: CGRect) {
+		super.init(frame: frame)
+		layoutHeaderForStoped()
+	}
+	
+	required public init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
 	// MARK: - interface
 	
 	public func getOriginalInsetTop() -> CGFloat {
@@ -73,6 +84,9 @@ public class AHRefreshHeader: UIView {
 		}
 		
 		if let superView = newSuperview {
+			if superView.isKindOfClass(UIScrollView) {
+				originalInsetTop = (superView as! UIScrollView).contentInset.top
+			}
 			registerObserve(superView)
 		} else {
 			//remove from super view
@@ -86,6 +100,13 @@ public class AHRefreshHeader: UIView {
 					scrollViewDidScroll(contentOffset)
 				}
 			}
+		} else if "contentInset" == keyPath {
+			if isUserChangeInset {
+				return
+			}
+			if let scrollView = scrollView {
+				originalInsetTop = scrollView.contentInset.top
+			}
 		}
 	}
 	
@@ -95,12 +116,15 @@ public class AHRefreshHeader: UIView {
 				
 				let threshold = self.frame.origin.y - originalInsetTop
 				
+				if .Stoped == state {
+					layoutHeaderForStoped(by: contentOffset.y)
+				}
+				
 				if !scrollView.dragging && .Triggered == state {
 					setRefresh(.Loading)
 				} else if contentOffset.y >= threshold && scrollView.dragging && .Stoped != state {
 					setRefresh(.Stoped)
 				} else if contentOffset.y < threshold && scrollView.dragging && .Stoped == state {
-					originalInsetTop = scrollView.contentInset.top
 					setRefresh(.Triggered)
 				} /*else if contentOffset.y >= scrollOffsetThreshold && .Stoped != state {
 					state = .Stoped
@@ -108,10 +132,10 @@ public class AHRefreshHeader: UIView {
 				
 			} else {
 				
-				let offset = originalInsetTop + self.bounds.size.height
-				var contentInset = scrollView.contentInset
-				contentInset.top = offset
-				scrollView.contentInset = contentInset
+//				let offset = originalInsetTop + self.bounds.size.height
+//				var contentInset = scrollView.contentInset
+//				contentInset.top = offset
+//				scrollView.contentInset = contentInset
 			}
 		}
 	}
@@ -166,19 +190,25 @@ public class AHRefreshHeader: UIView {
 	}
 	
 	private func setScrollViewContentInsets(insets: UIEdgeInsets) {
+		isUserChangeInset = true
+		
 		UIView.animateWithDuration(timeIntervalForScrollAnimate(), delay: 0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: {
 				if let scrollView = self.scrollView {
 					scrollView.contentInset = insets
 				}
-			}, completion: nil)
+		}) { (result) in
+			self.isUserChangeInset = false
+		}
 	}
 
 	private func registerObserve(view: UIView) {
 		view.addObserver(self, forKeyPath: "contentOffset", options: .New, context: nil)
+		view.addObserver(self, forKeyPath: "contentInset", options: .New, context: nil)
 	}
 	
 	private func unregisterObserve(view: UIView) {
 		view.removeObserver(self, forKeyPath: "contentOffset")
+		view.removeObserver(self, forKeyPath: "contentInset")
 	}
 	
 	// MARK: - load resource
@@ -240,6 +270,10 @@ public class AHRefreshHeader: UIView {
 	}
 	
 	// MARK: - subclass can override
+	
+	public func layoutHeaderForStoped(by contentOffset: CGFloat) {
+		
+	}
 	
 	public func timeIntervalForShowSuccessFailed() -> NSTimeInterval {
 		return 3

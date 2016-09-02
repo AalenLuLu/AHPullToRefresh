@@ -23,7 +23,7 @@ class TableViewController: UITableViewController {
 		self.tableView.rowHeight = 50
 		self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
 		
-		dataList.append("TextHeaderDemo")
+		dataList.append("Text")
     }
 
 	override func viewDidAppear(animated: Bool) {
@@ -58,9 +58,11 @@ class TableViewController: UITableViewController {
 	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
-		let className = NSBundle.mainBundle().infoDictionary![String(kCFBundleExecutableKey)] as! String + "." + dataList[indexPath.row] + "TableViewController"
-		if let demoClass = NSClassFromString(className) as? UITableViewController.Type {
-			let viewController = demoClass.init(style: .Plain)
+		
+		let className = NSBundle.mainBundle().infoDictionary![String(kCFBundleExecutableKey)] as! String + "." + "AHRefresh" + dataList[indexPath.row] + "Header"
+		if let demoClass = NSClassFromString(className) as? AHRefreshHeader.Type {
+			let viewController = DemoTableViewController(style: .Plain)
+			viewController.refreshHeaderClass = demoClass
 			self.navigationController?.pushViewController(viewController, animated: true)
 		}
 	}
