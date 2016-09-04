@@ -37,7 +37,9 @@ class AHRefreshTextHeader: AHRefreshHeader {
 		arrowImageView.hidden = false
 		loadingActivity.hidden = true
 		loadingActivity.stopAnimating()
-//		rotateArrow(0, animated: false)
+		if !enableGradient {
+			rotateArrow(0, animated: true)
+		}
 	}
 	
 	override func layoutHeaderForStoped(by contentOffset: CGFloat) {
@@ -55,7 +57,9 @@ class AHRefreshTextHeader: AHRefreshHeader {
 		titleLabel.text = localizedString("AHRefreshStateTriggeredText")//"Release to Refresh"
 		arrowImageView.hidden = false
 		loadingActivity.hidden = true
-//		rotateArrow(CGFloat(M_PI), animated: false)
+		if !enableGradient {
+			rotateArrow(CGFloat(M_PI), animated: true)
+		}
 	}
 	
 	override func layoutHeaderForLoading() {
@@ -63,7 +67,9 @@ class AHRefreshTextHeader: AHRefreshHeader {
 		arrowImageView.hidden = true
 		loadingActivity.hidden = false
 		loadingActivity.startAnimating()
-//		rotateArrow(0, animated: false)
+		if !enableGradient {
+			rotateArrow(0, animated: true)
+		}
 	}
 	
 	lazy var titleLabel: UILabel = {

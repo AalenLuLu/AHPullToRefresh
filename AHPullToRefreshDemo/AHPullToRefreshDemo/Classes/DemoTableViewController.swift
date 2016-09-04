@@ -12,6 +12,7 @@ class DemoTableViewController: UITableViewController {
 
 	var dataList = [String]()
 	var refreshHeaderClass: AHRefreshHeader.Type?
+	var enableGradient = false
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,7 @@ class DemoTableViewController: UITableViewController {
 		
 		if let headerClass = refreshHeaderClass {
 			let refreshHeader = headerClass.init(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+			refreshHeader.enableGradient = enableGradient
 			tableView.addPullToRefresh(refreshHeader) {
 				print("loading...")
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), {

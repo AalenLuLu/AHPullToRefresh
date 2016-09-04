@@ -24,6 +24,7 @@ class TableViewController: UITableViewController {
 		self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
 		
 		dataList.append("Text")
+		dataList.append("Text_enablegradient")
     }
 
 	override func viewDidAppear(animated: Bool) {
@@ -59,10 +60,20 @@ class TableViewController: UITableViewController {
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		
-		let className = NSBundle.mainBundle().infoDictionary![String(kCFBundleExecutableKey)] as! String + "." + "AHRefresh" + dataList[indexPath.row] + "Header"
+		let data = dataList[indexPath.row]
+		var enableGradient = false
+		var name = data
+		if data.hasSuffix("_enablegradient") {
+			name = data.stringByReplacingOccurrencesOfString("_enablegradient", withString: "")
+			enableGradient = true
+		}
+		
+		let className = NSBundle.mainBundle().infoDictionary![String(kCFBundleExecutableKey)] as! String + "." + "AHRefresh" + name + "Header"
 		if let demoClass = NSClassFromString(className) as? AHRefreshHeader.Type {
 			let viewController = DemoTableViewController(style: .Plain)
+			viewController.title = data
 			viewController.refreshHeaderClass = demoClass
+			viewController.enableGradient = enableGradient
 			self.navigationController?.pushViewController(viewController, animated: true)
 		}
 	}

@@ -28,14 +28,12 @@ public class AHRefreshHeader: UIView {
 	
 	// MARK: - property
 	
-	private var originalInsetTop: CGFloat = 0
-	
-	public var state = AHRefreshState.Stoped
-	
 	public weak var scrollView: UIScrollView?
-	
 	public var triggerRefreshAction: (() -> Void)?
+	public var state = AHRefreshState.Stoped
+	public var enableGradient = false
 	
+	private var originalInsetTop: CGFloat = 0
 	private var isUserChangeInset = false
 	
 	required override public init(frame: CGRect) {
@@ -116,7 +114,7 @@ public class AHRefreshHeader: UIView {
 				
 				let threshold = self.frame.origin.y - originalInsetTop
 				
-				if .Stoped == state {
+				if enableGradient && .Stoped == state {
 					layoutHeaderForStoped(by: contentOffset.y)
 				}
 				
