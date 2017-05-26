@@ -12,7 +12,7 @@ var AHRefreshHeaderKey = "com.aalen.pulltorefresh.header"
 
 public extension UIScrollView {
 	
-	public func addPullToRefresh(header: AHRefreshHeader, action: () -> Void) {
+	public func addPullToRefresh(_ header: AHRefreshHeader, action: @escaping () -> Void) {
 		
 		removePullToRefresh()
 		

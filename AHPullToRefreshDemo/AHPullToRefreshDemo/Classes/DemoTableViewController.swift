@@ -24,16 +24,16 @@ class DemoTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
 		self.navigationController?.navigationBar.alpha = 0.1
 		self.tableView.rowHeight = 50
-		self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
+		self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
 		
 		if let headerClass = refreshHeaderClass {
 			let refreshHeader = headerClass.init(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
 			refreshHeader.enableGradient = enableGradient
 			tableView.addPullToRefresh(refreshHeader) {
 				print("loading...")
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+				DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3 * NSEC_PER_SEC)) / Double(NSEC_PER_SEC), execute: {
 					print("finished...")
-					refreshHeader.stopAnimating(.Success, showResult: false)
+					refreshHeader.stopAnimating(.success, showResult: false)
 				})
 			}
 		}
@@ -67,18 +67,18 @@ class DemoTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return dataList.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
         // Configure the cell...
 		cell.textLabel?.text = dataList[indexPath.row]

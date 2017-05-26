@@ -9,14 +9,14 @@
 import UIKit
 
 public enum AHRefreshState {
-	case Stoped, Triggered, Loading, Success, Failed, NoMore
+	case stoped, triggered, loading, success, failed, noMore
 }
 
 public enum AHRefreshResult {
-	case Success, Failed, NoMore
+	case success, failed, noMore
 }
 
-public class AHRefreshHeader: UIView {
+open class AHRefreshHeader: UIView {
 
     /*
     // Only override drawRect: if you perform custom drawing.
@@ -28,13 +28,13 @@ public class AHRefreshHeader: UIView {
 	
 	// MARK: - property
 	
-	public weak var scrollView: UIScrollView?
-	public var triggerRefreshAction: (() -> Void)?
-	public var state = AHRefreshState.Stoped
-	public var enableGradient = false
+	open weak var scrollView: UIScrollView?
+	open var triggerRefreshAction: (() -> Void)?
+	open var state = AHRefreshState.stoped
+	open var enableGradient = false
 	
-	private var originalInsetTop: CGFloat = 0
-	private var isUserChangeInset = false
+	fileprivate var originalInsetTop: CGFloat = 0
+	fileprivate var isUserChangeInset = false
 	
 	required override public init(frame: CGRect) {
 		super.init(frame: frame)
@@ -47,34 +47,34 @@ public class AHRefreshHeader: UIView {
 	
 	// MARK: - interface
 	
-	public func getOriginalInsetTop() -> CGFloat {
+	open func getOriginalInsetTop() -> CGFloat {
 		return originalInsetTop
 	}
 	
-	public func stopAnimating(result: AHRefreshResult, showResult: Bool) {
+	open func stopAnimating(_ result: AHRefreshResult, showResult: Bool) {
 		if showResult {
 			
 			switch result {
-				case .Success:
-					setRefresh(.Success)
-				case .Failed:
-					setRefresh(.Failed)
-				case .NoMore:
-					setRefresh(.NoMore)
+				case .success:
+					setRefresh(.success)
+				case .failed:
+					setRefresh(.failed)
+				case .noMore:
+					setRefresh(.noMore)
 			}
 			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(timeIntervalForShowSuccessFailed() * NSTimeInterval(NSEC_PER_SEC))), dispatch_get_main_queue(), { 
-				self.setRefresh(.Stoped)
+			DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(timeIntervalForShowSuccessFailed() * TimeInterval(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: { 
+				self.setRefresh(.stoped)
 			})
 			
 		} else {
-			setRefresh(.Stoped)
+			setRefresh(.stoped)
 		}
 	}
 	
 	// MARK: - view handle
 	
-	public override func willMoveToSuperview(newSuperview: UIView?) {
+	open override func willMove(toSuperview newSuperview: UIView?) {
 		originalInsetTop = 0
 		
 		if let oldSuperView = self.superview {
@@ -82,7 +82,7 @@ public class AHRefreshHeader: UIView {
 		}
 		
 		if let superView = newSuperview {
-			if superView.isKindOfClass(UIScrollView) {
+			if superView.isKind(of: UIScrollView.self) {
 				originalInsetTop = (superView as! UIScrollView).contentInset.top
 			}
 			registerObserve(superView)
@@ -91,10 +91,10 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 		if "contentOffset" == keyPath {
 			if let change = change {
-				if let contentOffset = change[NSKeyValueChangeNewKey]?.CGPointValue() {
+				if let contentOffset = (change[NSKeyValueChangeKey.newKey] as AnyObject).cgPointValue {
 					scrollViewDidScroll(contentOffset)
 				}
 			}
@@ -108,22 +108,22 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	private func scrollViewDidScroll(contentOffset: CGPoint) {
+	fileprivate func scrollViewDidScroll(_ contentOffset: CGPoint) {
 		if let scrollView = scrollView {
-			if .Loading != state {
+			if .loading != state {
 				
 				let threshold = self.frame.origin.y - originalInsetTop
 				
-				if enableGradient && .Stoped == state {
+				if enableGradient && .stoped == state {
 					layoutHeaderForStoped(by: contentOffset.y)
 				}
 				
-				if !scrollView.dragging && .Triggered == state {
-					setRefresh(.Loading)
-				} else if contentOffset.y >= threshold && scrollView.dragging && .Stoped != state {
-					setRefresh(.Stoped)
-				} else if contentOffset.y < threshold && scrollView.dragging && .Stoped == state {
-					setRefresh(.Triggered)
+				if !scrollView.isDragging && .triggered == state {
+					setRefresh(.loading)
+				} else if contentOffset.y >= threshold && scrollView.isDragging && .stoped != state {
+					setRefresh(.stoped)
+				} else if contentOffset.y < threshold && scrollView.isDragging && .stoped == state {
+					setRefresh(.triggered)
 				} /*else if contentOffset.y >= scrollOffsetThreshold && .Stoped != state {
 					state = .Stoped
 				}*/
@@ -138,7 +138,7 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	private func setRefresh(state: AHRefreshState) {
+	fileprivate func setRefresh(_ state: AHRefreshState) {
 		
 		if self.state == state {
 			return
@@ -148,29 +148,29 @@ public class AHRefreshHeader: UIView {
 		self.state = state
 		
 		switch state {
-		case .Stoped:
+		case .stoped:
 			layoutHeaderForStoped()
 			resetScrollViewContentInsets()
-		case .Loading:
+		case .loading:
 			layoutHeaderForLoading()
 			setScrollViewContentInsetsForLoading()
-			if previousState == .Triggered {
+			if previousState == .triggered {
 				if let action = triggerRefreshAction {
 					action()
 				}
 			}
-		case .Triggered:
+		case .triggered:
 			layoutHeaderForTriggered()
-		case .Success:
+		case .success:
 			layoutHeaderForSuccess()
-		case .Failed:
+		case .failed:
 			layoutHeaderForFailed()
-		case .NoMore:
+		case .noMore:
 			layoutHeaderForNoMore()
 		}
 	}
 	
-	private func resetScrollViewContentInsets() {
+	fileprivate func resetScrollViewContentInsets() {
 		if let scrollView = scrollView {
 			var insets = scrollView.contentInset
 			insets.top = originalInsetTop
@@ -178,7 +178,7 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	private func setScrollViewContentInsetsForLoading() {
+	fileprivate func setScrollViewContentInsetsForLoading() {
 		if let scrollView = scrollView {
 			let offset = originalInsetTop + self.bounds.size.height
 			var insets = scrollView.contentInset
@@ -187,10 +187,10 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 	
-	private func setScrollViewContentInsets(insets: UIEdgeInsets) {
+	fileprivate func setScrollViewContentInsets(_ insets: UIEdgeInsets) {
 		isUserChangeInset = true
 		
-		UIView.animateWithDuration(timeIntervalForScrollAnimate(), delay: 0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: {
+		UIView.animate(withDuration: timeIntervalForScrollAnimate(), delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
 				if let scrollView = self.scrollView {
 					scrollView.contentInset = insets
 				}
@@ -199,21 +199,21 @@ public class AHRefreshHeader: UIView {
 		}
 	}
 
-	private func registerObserve(view: UIView) {
-		view.addObserver(self, forKeyPath: "contentOffset", options: .New, context: nil)
-		view.addObserver(self, forKeyPath: "contentInset", options: .New, context: nil)
+	fileprivate func registerObserve(_ view: UIView) {
+		view.addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
+		view.addObserver(self, forKeyPath: "contentInset", options: .new, context: nil)
 	}
 	
-	private func unregisterObserve(view: UIView) {
+	fileprivate func unregisterObserve(_ view: UIView) {
 		view.removeObserver(self, forKeyPath: "contentOffset")
 		view.removeObserver(self, forKeyPath: "contentInset")
 	}
 	
 	// MARK: - load resource
 	
-	public func localizedString(key: String) -> String? {
+	open func localizedString(_ key: String) -> String? {
 		
-		var language = NSLocale.preferredLanguages()[0]
+		var language = Locale.preferredLanguages[0]
 		if language.hasPrefix("en") {
 			language = "en"
 		} else if language.hasPrefix("zh") {
@@ -222,62 +222,62 @@ public class AHRefreshHeader: UIView {
 			language = "en"
 		}
 		
-		if let bundle = NSBundle(path: NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("AHRefresh", ofType: "bundle")!)!.pathForResource(language, ofType: "lproj")!) {
-			let string = bundle.localizedStringForKey(key, value: nil, table: nil)
+		if let bundle = Bundle(path: Bundle(path: Bundle(for: type(of: self)).path(forResource: "AHRefresh", ofType: "bundle")!)!.path(forResource: language, ofType: "lproj")!) {
+			let string = bundle.localizedString(forKey: key, value: nil, table: nil)
 			return string
 		}
 		return nil
 	}
 	
-	public func arrowImage() -> UIImage? {
-		let scale = UIScreen.mainScreen().scale
+	open func arrowImage() -> UIImage? {
+		let scale = UIScreen.main.scale
 		var name = "arrow"
 		if 1 < scale && scale < 3 {
 			name += "@2x"
 		} else if 2 < scale {
 			name += "@3x"
 		}
-		let path = NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("AHRefresh", ofType: "bundle")!)?.pathForResource(name, ofType: "png")
+		let path = Bundle(path: Bundle(for: type(of: self)).path(forResource: "AHRefresh", ofType: "bundle")!)?.path(forResource: name, ofType: "png")
 		return UIImage(contentsOfFile: path!)
 	}
 	
 	// MARK: - subclass must override
 	
-	public func layoutHeaderForLoading() {
+	open func layoutHeaderForLoading() {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForStoped() {
+	open func layoutHeaderForStoped() {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForTriggered() {
+	open func layoutHeaderForTriggered() {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForSuccess() {
+	open func layoutHeaderForSuccess() {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForFailed() {
+	open func layoutHeaderForFailed() {
 		fatalError("subclass must override")
 	}
 	
-	public func layoutHeaderForNoMore() {
+	open func layoutHeaderForNoMore() {
 		fatalError("subclass must override")
 	}
 	
 	// MARK: - subclass can override
 	
-	public func layoutHeaderForStoped(by contentOffset: CGFloat) {
+	open func layoutHeaderForStoped(by contentOffset: CGFloat) {
 		
 	}
 	
-	public func timeIntervalForShowSuccessFailed() -> NSTimeInterval {
+	open func timeIntervalForShowSuccessFailed() -> TimeInterval {
 		return 3
 	}
 	
-	public func timeIntervalForScrollAnimate() -> NSTimeInterval {
+	open func timeIntervalForScrollAnimate() -> TimeInterval {
 		return 0.25
 	}
 }

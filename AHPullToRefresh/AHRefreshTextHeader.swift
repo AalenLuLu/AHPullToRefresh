@@ -21,10 +21,10 @@ class AHRefreshTextHeader: AHRefreshHeader {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	func rotateArrow(degrees: CGFloat, animated: Bool) {
+	func rotateArrow(_ degrees: CGFloat, animated: Bool) {
 		let transform = CATransform3DMakeRotation(degrees, 0, 0, 1)
 		if animated {
-			UIView.animateWithDuration(0.2, delay: 0, options: .BeginFromCurrentState, animations: {
+			UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: {
 				self.arrowImageView.layer.transform = transform
 				}, completion: nil)
 		} else {
@@ -34,8 +34,8 @@ class AHRefreshTextHeader: AHRefreshHeader {
 	
 	override func layoutHeaderForStoped() {
 		titleLabel.text = localizedString("AHRefreshStateStopedText")//"Pull to Refresh"
-		arrowImageView.hidden = false
-		loadingActivity.hidden = true
+		arrowImageView.isHidden = false
+		loadingActivity.isHidden = true
 		loadingActivity.stopAnimating()
 		if !enableGradient {
 			rotateArrow(0, animated: true)
@@ -50,22 +50,22 @@ class AHRefreshTextHeader: AHRefreshHeader {
 		} else if 1 < progress {
 			progress = 1
 		}
-		rotateArrow(progress * CGFloat(M_PI), animated: false)
+		rotateArrow(progress * .pi, animated: false)
 	}
 	
 	override func layoutHeaderForTriggered() {
 		titleLabel.text = localizedString("AHRefreshStateTriggeredText")//"Release to Refresh"
-		arrowImageView.hidden = false
-		loadingActivity.hidden = true
+		arrowImageView.isHidden = false
+		loadingActivity.isHidden = true
 		if !enableGradient {
-			rotateArrow(CGFloat(M_PI), animated: true)
+			rotateArrow(.pi, animated: true)
 		}
 	}
 	
 	override func layoutHeaderForLoading() {
 		titleLabel.text = localizedString("AHRefreshStateLoadingText")//"Loading..."
-		arrowImageView.hidden = true
-		loadingActivity.hidden = false
+		arrowImageView.isHidden = true
+		loadingActivity.isHidden = false
 		loadingActivity.startAnimating()
 		if !enableGradient {
 			rotateArrow(0, animated: true)
@@ -74,27 +74,27 @@ class AHRefreshTextHeader: AHRefreshHeader {
 	
 	lazy var titleLabel: UILabel = {
 		var label = UILabel()
-		label.frame = CGRectMake(0, 0, self.bounds.size.width, 22)
-		label.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))
-		label.textColor = UIColor.blackColor()
-		label.textAlignment = .Center
+		label.frame = CGRect(x: 0, y: 0, width: self.bounds.size.width, height: 22)
+		label.center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+		label.textColor = UIColor.black
+		label.textAlignment = .center
 		return label
 	}()
 	
 	lazy var arrowImageView: UIImageView = {
 		var imageView = UIImageView()
 		if let arrowImage = self.arrowImage() {
-			imageView.frame = CGRectMake(0, 0, arrowImage.size.width, arrowImage.size.height)
-			imageView.center = CGPointMake(30, CGRectGetMidY(self.bounds))
+			imageView.frame = CGRect(x: 0, y: 0, width: arrowImage.size.width, height: arrowImage.size.height)
+			imageView.center = CGPoint(x: 30, y: self.bounds.midY)
 			imageView.image = arrowImage
 		}
 		return imageView
 	}()
 	
 	lazy var loadingActivity: UIActivityIndicatorView = {
-		var activity = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-		activity.frame = CGRectMake(0, 0, 40, 40)
-		activity.center = CGPointMake(30, CGRectGetMidY(self.bounds))
+		var activity = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+		activity.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+		activity.center = CGPoint(x: 30, y: self.bounds.midY)
 		return activity
 	}()
 	
